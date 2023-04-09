@@ -1,32 +1,32 @@
 body{
     font-family: 'Montserrat', sans-serif;
+    text-align: center;
 }
-#title{
-    background-color: #FF4628;
-    color: #fff;
+h1, h2, h3, h4, h5, h6{
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    line-height: 1.5;
 }
-.container-fluid{
-    padding: 3% 15%;
+p{
+    color: #8f8f8f;
 }
-h1{
+/* ------------------------------------------------------------------------------- */
+/* Big-Headings */
+.big-headings{
     font-family: 'Montserrat', sans-serif;
     font-weight: 900;
     font-size: 3rem;
     line-height: 1.5;
 }
-h2{
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 900;
-    font-size: 2rem;
-    line-height: 1.5;
+#title{
+    background-color: #FF4628;
+    text-align: left;
+    color: #fff;
 }
-h3{
-    font-family: 'Montserrat', sans-serif;
-    font-weight: 900;
+.container-fluid{
+    padding: 3% 15%;
 }
-p{
-    color: #8f8f8f;
-}
+/* ------------------------------------------------------------------------------- */
 /* Navbar */
 .navbar{
     padding: 0 0 4.5rem;
@@ -44,23 +44,30 @@ p{
     font-size: 1.2rem;
     font-weight: 300;
 }
-
-/* DOwnload Button */
+/* ------------------------------------------------------------------------------- */
+/* Download Button */
 .download-btn{
     margin: 5% 3% 5% 0;
 }
-
+/* ------------------------------------------------------------------------------- */
 /* Title-img */
 .title-img{
     width: 60%;
     transform: rotate(24deg);
+    margin-bottom: -25%;
 }
+.image-title{
+    position: relative;
+}
+/* ------------------------------------------------------------------------------- */
 /* Feature */
 #features{
     padding: 8% 15%;
+    background-color: #fff;
+    position: relative;
+    z-index: 1;
 }
 .feature-box{
-    text-align: center;
     padding: 5%;
 }
 .icon{
@@ -70,10 +77,12 @@ p{
 .icon:hover{
     color: #FF4628;
 }
-
+.feature-heading{
+    font-size: 1.5rem;
+}
+/* ------------------------------------------------------------------------------- */
 /* Testimonals */
 #testimonals{
-    text-align: center;
     background-color: #ef8171;
     color: #fff;
 }
@@ -85,20 +94,62 @@ p{
     border-radius: 90%;
     margin: 20px;
 }
+.testimonial-text{
+    font-size: 2rem;
+    line-height: 1.5;
+}
 #press{
     background-color: #ef8171;
-    text-align: center;
     padding: 5%;
 }
 .press-logo{
     width: 12%;
     margin: 20px 20px 50px;
 }
+/* ------------------------------------------------------------------------------- */
 /* Pricing */
 #pricing{
     padding: 90px;
-    text-align: center;
 }
 .pricing-column{
     padding: 2% 3%;
+}
+.pricing-text{
+    font-size: 2rem;
+    line-height: 1.5;
+}
+.pricing-heading{
+    font-size: 2rem;
+    line-height: 1.5;
+}
+/* ------------------------------------------------------------------------------- */
+@media (max-width: 1028px){
+    #title{
+       text-align: center; 
+    }
+
+    .title-img{
+        position: static;
+        transform: rotate(0);
+    }
+}
+#cta{
+    background-color: #FF4628;
+    color: #fff;
+    padding: 8% 15%;
+}
+.cta-heading{
+    font-size: 1.5rem;
+}
+.cta-download{
+    margin: 1rem;
+}
+footer{
+    background-color: #ffff;
+    margin: 4% 12%;
+    padding: 1.5rem 1.5rem;
+}
+.logo{
+    size: 5px;
+    margin: 0.5rem 0.5rem;
 }
