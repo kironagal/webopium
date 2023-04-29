@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>To Do list</title>
+</head>
+<body>
+    <!-- This is JS (ECMA) code outside the html -->
+    <h1>It's a <%= kindOfDay %></h1>
+    <h2> Today is <%= week %></h2>
+
+    <% if (week === "Saturday" || week  === "Sunday"){ %>
+        <h1 style="color: blueviolet;"><%= week  %> ToDo list</h1>
+    <% } else { %>
+        <h1 style="color: green;"><%= week  %> Todo List</h1>
+    <% } %>
+
+</body>
+</html>
