@@ -61,6 +61,10 @@ app.get("/work", function(req, res){
     });
 });
 
+//just to test EJS layouts by creating new /about route
+app.get("/about", function(req, res){
+    res.render("about");
+});
 
 app.listen(3000, function(){
     console.log("server listing on port 3000")
