@@ -1,12 +1,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { render } = require('ejs');
+const date = require(__dirname+'/date.js');
 
 const app = express();
 
-///Avoid using var for declaration use let instead
-let nLists = ["Workout","Cooking","Working","Recreational"];
-let workItems = [];
+// Avoid using var for declaration use let instead
+// In Array decalred as constant is it possible to push data even though it is constant but it cannot be reassigned to new variable
+// we can vary the values inside an array declared as constant but not the constant
+const nLists = ["Workout","Cooking","Working","Recreational"];
+const workItems = [];
 
 app.set('view engine', 'ejs');  //place it only after express initiation else gives error
 
@@ -18,15 +21,9 @@ app.use(express.static("public"));
 
 app.get("/", function(req, res){
 
-    let today = new Date();
-    let options = {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        // year: "numeric"
-    }
-
-    let day = today.toLocaleDateString('en-US', options)
+    //sent day logic to other date.js folder and fetched it from modules.exports process
+    const day = date.getDate(); // renders date from module, changed let to const while refactoring
+    //let day = date.getDay(); // renders day from module
 
     res.render('list', {
         ListTitle: day,
