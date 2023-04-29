@@ -3,17 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <title>To Do list</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@200;400&family=PT+Sans:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- This is JS (ECMA) code outside the html -->
-    <h1>It's a <%= kindOfDay %></h1>
-    <h2> Today is <%= week %></h2>
-
-    <% if (week === "Saturday" || week  === "Sunday"){ %>
-        <h1 style="color: blueviolet;"><%= week  %> ToDo list</h1>
-    <% } else { %>
-        <h1 style="color: green;"><%= week  %> Todo List</h1>
-    <% } %>
+    <div id="heading" class="box">
+        <!-- This is JS (ECMA) code outside the html -->
+        <h1><%= ListTitle %></h1>
+    </div>
+    <div class="box">
+        <% for (var i = 0; i < newList.length ; i++){ %>
+            <div class="item">
+                <input type="checkbox">
+                <p><%= newList[i] %></p>
+            </div>
+        <% } %>
+        <form class="item" action="/" method="post">
+            <input type="text" name="newItem" placeholder="New Item" autocomplete="off">
+            <button type="submit" name="List" value=<%= ListTitle %>">+</button>
+        </form>
+    </div>
 
 </body>
 </html>
