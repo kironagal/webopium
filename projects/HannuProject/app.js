@@ -1,106 +1,117 @@
-const { MongoClient } = require('mongodb');
-// or as an es module:
-// import { MongoClient } from 'mongodb'
+const mongoose = require('mongoose');
 
-// Connection URL
-const url = 'mongodb://127.0.0.1:27017';
-const client = new MongoClient(url);
+const fruitSchema = new mongoose.Schema({
+    name: String,
+    price: {
+        type: Number,
+        min: 1,
+        max: 100
+    },
+    rating: Number,
+    review: String
+});
 
-// Database Name
-const dbName = 'hannuDB';
+const Fruit = mongoose.model('Fruit', fruitSchema);
 
-async function main() {
-  // Use connect method to connect to the server
-  await client.connect();
-  console.log('Connected successfully to server');
-  const db = client.db(dbName);
-  const collection = db.collection('hannu');
+const fruit = new Fruit({
+    name: 'apple',
+    // inbuilt validation 
+    price: 30,
+    rating: 9,
+    review: 'Kept doctor away'
+});
 
-// uncomment or comment necessary peice of code  
-//   Insert a Document
-  const insertResult = await collection.insertMany(
-      [
-          {
-              name: 'apple',
-              score: 9,
-              review: 'Docter away'
-          }, 
-          { 
-              name: 'banana',
-              score: 9.5,
-              review: 'Helps Digestion'
-          }, 
-          {
-              name: 'grape',
-              score: 9,
-              review: 'Needs seeds'
-          }
-      ]
-      );
-    console.log('Inserted documents =>', insertResult); 
+const banana = new Fruit({
+    name: 'banana',
+    price: 15,
+    rating: 9.5,
+    review: 'Digestion'
+});
 
-    // Find All Documents
-    const findResult = await collection.find({}).toArray();
-    console.log('Found documents =>', findResult);
+const grape = new Fruit({
+    name: 'grape',
+    price: 45,
+    rating: 9,
+    review: 'green as green'
+});
 
-    // Find Documents with a Query Filter
-    const filteredDocs = await collection.find(
-        {
-            name: 'apple',
-            score: 9,
-            review: 'Docter away'
-        },
-    ).toArray();
-    console.log('Found documents filtered by fruit name =>', filteredDocs);
+const mango = new Fruit({
+    name: 'mango',
+    price: 45,
+    rating: 9.6,
+    review: 'King'
+});
 
-    // Update a document
-    const updateResult = await collection.updateOne(
-        {
-            name: 'apple',
-            score: 9,
-            review: 'Docter away'
-        },
-         { $set: { name: 'sebu' } });
-    console.log('Updated documents =>', updateResult);
+const personSchema = new mongoose.Schema({
+    name: String,
+    Age: Number,
+    // embeding other documents within the db/relation 
+    favoriteFruit: fruitSchema
+});
+const Person = mongoose.model('Person', personSchema);
 
-    // Remove a document
-    const deleteResult = await collection.deleteMany(
-        {
-            name: 'apple',
-            score: 9,
-            review: 'Docter away'
-          },
-          {
-            name: 'banana',
-            score: 9.5,
-            review: 'Helps Digestion'
-          },
-          {
-            name: 'grape',
-            score: 9,
-            review: 'Needs seeds'
-          },
-          {
-            name: 'apple',
-            score: 9,
-          }
-    );
-    console.log('Deleted documents =>', deleteResult);
+const pine = new Fruit({
+    name: "pineApple",
+    price: 60,
+    rating: 9.6,
+    review: "Sweet"
+})
+const person = new Person({
+    name: "Hara",
+    Age: 8,
+    favoriteFruit: mango
+});
 
-    // Index a Collection
-    const indexName = await collection.createIndex(
-        {
-            name: 1
-        },
-    );
-    console.log('index name =', indexName);
+const person1 = new Person({
+    name: "Courtney",
+    Age: 23,
+    favoriteFruit: pine
+})
 
-  // the following code examples can be pasted here...
+initial();
+function initial (){
+    if (Fruit.name == 'apple'){
+        mongoose.connect("mongodb://127.0.0.1:27017/fruitDB");
+    } else {
+        mongoose.connect("mongodb://127.0.0.1:27017/peopleDB");
+    }
+    console.log("running the server");  
+    return 'done.';
+};
 
-  return 'done.';
-}
+// Fruit.insertMany().then([banana, grape, mango], function(err, docs){
+//     if (err) {
+//         console.log(err);
+//     } else {
+//         console.log('Saved successfully');
+//     }
+// });
 
-main()
-  .then(console.log)
-  .catch(console.error)
-  .finally(() => client.close());
+Person.insertMany().then([person, person1], function(err, docs){
+    if (err) {
+        console.log(err);
+    } else {
+        console.log('Saved successfully');
+    }
+});
+
+person.save(); person1.save();
+
+// fruit.save();
+//The usage of callback functions has been deprecated in Mongoose 7.x. we need to use below method to get the data/collection from db
+
+//Fruit.updateOne({_id:"6452a7444b3616c64fe0bb25"}, {name: "Pomogranate"});
+
+Fruit.find().then(function (err, fruits){
+    if (err){
+        console.log(err);
+    } else {
+        mongoose.connection.close();
+        fruits.forEach(function(fruit){
+            console.log(Fruit.price);
+        });
+        mongoose.connection.close();
+    }
+});
+
+Fruit.deleteMany({})
