@@ -5,12 +5,16 @@
   </div>
 
   <div class="box">
-    <% for (let i=0; i<newListItems.length; i++) { %>
-      <div class="item">
-        <input type="checkbox">
-        <p><%=  newListItems[i]  %></p>
-      </div>
-      <% } %>
+    <% newListItems.forEach(function(item) { %>
+      <form action="/delete" method="post">
+        <div class="item">
+          <!-- we will get on/off status from checkbox we can tap into which checkbox is on and we can remove it form Db
+          by simply tapping into document ID, because each item has an unique ID, which will is done below -->
+          <input type="checkbox" name="checkbox" value="<%=item._id%>" onChange="this.form.submit()">
+           <p><%= item.name %></p>  <!--tapping into name of the db item document -->
+        </div> 
+      </form>
+    <% }) %>
 
       <form class="item" action="/" method="post">
         <input type="text" name="newItem" placeholder="New Item" autocomplete="off">
