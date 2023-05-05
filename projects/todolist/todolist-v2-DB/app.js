@@ -3,6 +3,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require('mongoose');
+const _ = require("lodash");
 
 const app = express();
 
@@ -73,7 +74,7 @@ app.get("/", function(req, res) {
 
 //dynamically creating pages
 app.get("/:customName", function (req, res){
-  const customName = req.params.customName;
+  const customName = _.capitalize(req.params.customName);
 
   List.findOne({name: customName}).then(function (foundList){
       if (!foundList){
@@ -101,12 +102,23 @@ app.get("/:customName", function (req, res){
 app.post("/", function(req, res){
 
   const itemName = req.body.newItem;
+  const listName = req.body.list; //fetiching the value from button and its value here to add item to particular list
+
   const item = new Item ({
     name: itemName
   });
-  item.save();
-  // to add up the newly entered item it should be rendered on homepage so we should redirect it
-  res.redirect("/");
+
+  if (listName === "Today"){
+    item.save();
+    // to add up the newly entered item it should be rendered on homepage so we should redirect it
+    res.redirect("/");
+  } else {
+    List.findOne({name: listName}).then(function (foundList){
+      foundList.items.push(item);
+      foundList.save();
+      res.redirect("/"+ listName);
+    })
+  }
   // this code doesnt allow us to add new item to the list
   // if (req.body.list === "Work") {
   //   workItems.push(item);
@@ -118,14 +130,26 @@ app.post("/", function(req, res){
 });
 
 app.post("/delete", function(req, res){
-  const checkedItem = req.body.checkbox;
+  const checkedItemId = req.body.checkbox;
+  const listName = req.body.listName;
+
+  if(listName === "Today"){
   // Deleting based on clicked checkbox
-  Item.findByIdAndRemove(checkedItem).then(function(){
+  Item.findByIdAndRemove(checkedItemId).then(function(){
     console.log("Successfully deleted the checked item");
   }).catch(function (err){
     console.log(err);
   })
   res.redirect("/");
+  } else {
+    console.log(req.body.checkedItemId);
+    // To loop thorought documnet and array we can integrate "Model.findOneAndUpdate()" by mongoosejs and mongodb's $pull
+    // https://www.mongodb.com/docs/v6.0/reference/operator/update/pull/#-pull
+    
+    List.findOneAndUpdate({name: listName}, {$pull: {items: {_id: checkedItemId}}}).then(function (){
+        res.redirect("/"+ listName);
+    });
+  }
 });
 
 app.get("/work", function(req,res){
