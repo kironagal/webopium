@@ -14,7 +14,8 @@ app.use(express.static("public"));
 
 // Since we were storing in array which will refresh on every restart we will be using mongoDB and deleted this array
 // Starting Db connection
-mongoose.connect("mongodb://127.0.0.1:27017/todoListDB");
+// replacing it with mongodb connect application link
+mongoose.connect("mongodb+srv://admin-kishore:Test-kishAtlas4@cluster0.vduoleg.mongodb.net/todoListDB");
 
 // creating a Schema
 const itemsSchema = {
