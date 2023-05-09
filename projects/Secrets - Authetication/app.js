@@ -1,4 +1,5 @@
 require('dotenv').config(); // dotenv to load .env files
+const md5 = require('md5'); // JSc function for hashing messages
 const express = require('express');
 const bodyParser = require('body-parser');
 const ejs = require('ejs');
@@ -6,8 +7,6 @@ const mongoose = require('mongoose');
 const encrypt = require('mongoose-encryption'); // https://www.npmjs.com/package/mongoose-encryption
 
 const app = express();
-
-//console.log(process.env.TEST_KEY);
 
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
@@ -20,9 +19,6 @@ const userSchema = new mongoose.Schema ({
     email: String,
     password: String
 });
-
-// Encrypt Only Certain Fields
-userSchema.plugin(encrypt, {secret: (process.env.SECRETKEY), encryptedFields: ['password']});
 
 const User = mongoose.model('User', userSchema);
 
@@ -41,7 +37,7 @@ app.get("/register", function (req, res){
 app.post("/register", function(req, res){
     const newUser = new User ({
         email: req.body.username,
-        password: req.body.password
+        password: md5(req.body.password)
     });
     newUser.save().then(function(saved){
         res.render('secrets');
@@ -53,7 +49,7 @@ app.post("/register", function(req, res){
 
 app.post("/login", function(req, res){
     const userName = req.body.username;
-    const password = req.body.password;
+    const password = md5(req.body.password);
 
     User.findOne({email: userName}).then(function (foundUser){
         if (foundUser){
