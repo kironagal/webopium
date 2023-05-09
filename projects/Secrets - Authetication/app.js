@@ -1,3 +1,4 @@
+require('dotenv').config(); // dotenv to load .env files
 const express = require('express');
 const bodyParser = require('body-parser');
 const ejs = require('ejs');
@@ -6,6 +7,7 @@ const encrypt = require('mongoose-encryption'); // https://www.npmjs.com/package
 
 const app = express();
 
+//console.log(process.env.TEST_KEY);
 
 app.use(express.static('public'));
 app.set('view engine', 'ejs');
@@ -19,11 +21,8 @@ const userSchema = new mongoose.Schema ({
     password: String
 });
 
-// Creating a long secret key to pass
-const secretKey = "Showupeverydayforever";
-
 // Encrypt Only Certain Fields
-userSchema.plugin(encrypt, {secret: secretKey, encryptedFields: ['password']});
+userSchema.plugin(encrypt, {secret: (process.env.SECRETKEY), encryptedFields: ['password']});
 
 const User = mongoose.model('User', userSchema);
 
