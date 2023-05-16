@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const passport = require('passport');
 const passportLocalMongoose = require('passport-local-mongoose'); //since this package require "passport-local" we are not requiring it here
+const GoogleStrategy = require('passport-google-oauth20')
 
 const app = express();
 
@@ -63,6 +64,7 @@ app.get("/secrets", function (req, res){
     }
 });
 
+//from passport-local-mongoose package
 app.post("/register", function(req, res){
     User.register({username:req.body.username}, req.body.password, function (err, user){
         if (err){
