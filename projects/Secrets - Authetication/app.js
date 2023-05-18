@@ -6,7 +6,8 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const passport = require('passport');
 const passportLocalMongoose = require('passport-local-mongoose'); //since this package require "passport-local" we are not requiring it here
-const GoogleStrategy = require('passport-google-oauth20')
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const findOrCreate = require('mongoose-findorcreate');
 
 const app = express();
 
@@ -35,6 +36,8 @@ const userSchema = new mongoose.Schema ({
 
 //Using Plugin Passport-Local Mongoose
 userSchema.plugin(passportLocalMongoose);
+//mongoose-findorcreate 
+userSchema.plugin(findOrCreate);
 
 const User = mongoose.model('User', userSchema);
 
@@ -44,9 +47,28 @@ passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser()); //creats cookies
 passport.deserializeUser(User.deserializeUser()); // destroys cookies
 
+passport.use(new GoogleStrategy({
+    clientID: process.env.CLIENT_ID,
+    clientSecret: process.env.CLIENT_SECRET,
+    callbackURL: "http://localhost:3000/auth/google/secrets",
+    // google+ api deprecation
+    userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
+    },
+    function(accessToken, refreshToken, profile, cb) {
+        // findorcreate is a psuedo/made-up function install mongoose-findorcreate 
+        User.findOrCreate({ googleId: profile.id}, function (err, user){
+            return cb (err, user);
+        });
+    }
+));
+
 app.get("/", function (req, res){
     res.render('home');
 });
+
+//Adding /auth/google since it is refered from register.ejs
+app.get('/auth/google', passport.authenticate('google', { scope: ['profile']})
+);
 
 app.get("/login", function (req, res){
     res.render('login');
