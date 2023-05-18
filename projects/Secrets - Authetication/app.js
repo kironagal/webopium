@@ -31,7 +31,8 @@ mongoose.connect("mongodb://127.0.0.1:27017/userDB", {useNewUrlParser: true});
 // Defining your schema as per encryption
 const userSchema = new mongoose.Schema ({
     email: String,
-    password: String
+    password: String,
+    googleId: String //we can validate whether the person already exists 
 });
 
 //Using Plugin Passport-Local Mongoose
@@ -44,8 +45,21 @@ const User = mongoose.model('User', userSchema);
 //Simplified Passport/Passport-Local Configuration
 passport.use(User.createStrategy());
 
-passport.serializeUser(User.serializeUser()); //creats cookies
-passport.deserializeUser(User.deserializeUser()); // destroys cookies
+//Replacing the previous as it was giving error Failed to serialize user into session
+passport.serializeUser(function(user, cb){
+    process.nextTick(function(){
+        return cb(null, {
+            id: user.id, 
+            username: user.username,
+        });
+    });
+});
+
+passport.deserializeUser(function( user, cb){
+    process.nextTick(function() {
+        return cb(null, user);
+    });
+})
 
 passport.use(new GoogleStrategy({
     clientID: process.env.CLIENT_ID,
@@ -55,6 +69,7 @@ passport.use(new GoogleStrategy({
     userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo"
     },
     function(accessToken, refreshToken, profile, cb) {
+        console.log(profile);
         // findorcreate is a psuedo/made-up function install mongoose-findorcreate 
         User.findOrCreate({ googleId: profile.id}, function (err, user){
             return cb (err, user);
@@ -69,6 +84,10 @@ app.get("/", function (req, res){
 //Adding /auth/google since it is refered from register.ejs
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile']})
 );
+
+// authnticatin after google authenticates redirects to this path from google
+app.get('/auth/google/secrets', passport.authenticate('google',{ failureRedirect: '/login'}), 
+    function(req, res){ res.redirect('/secrets')});
 
 app.get("/login", function (req, res){
     res.render('login');
