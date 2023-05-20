@@ -32,7 +32,8 @@ mongoose.connect("mongodb://127.0.0.1:27017/userDB", {useNewUrlParser: true});
 const userSchema = new mongoose.Schema ({
     email: String,
     password: String,
-    googleId: String //we can validate whether the person already exists 
+    googleId: String, //we can validate whether the person already exists
+    secret: String // this will save user secret
 });
 
 //Using Plugin Passport-Local Mongoose
@@ -98,12 +99,59 @@ app.get("/register", function (req, res){
 });
 
 app.get("/secrets", function (req, res){
+// since it will be routed only after the authtntication we will be removing below validation part and add new submitted secrets
+// here we will be quering the secret is not null using mongoose
+    User.find({"secret": {$ne: null}}).then(function(foundUsers){
+        if (foundUsers){
+            res.render("secrets", {usersWithSecret: foundUsers});
+        }
+    }).catch(function(err){
+        if(err){console.log(err)};
+    });
+});
+
+app.get("/submit", function (req, res){
+    // we will check wheather the user is logged in and then we will render the page
     if (req.isAuthenticated()){
-        res.render("secrets");
+        res.render("submit");
     } else {
-        res.redirect("/register");
+        res.redirect("/login");
     }
 });
+
+app.post("/submit", function (req, res){
+    const submittedSecret = req.body.secret;
+    //passport will save user id to req 
+    console.log(req.user.id);
+    User.findById(req.user.id). then(function (foundUser){
+        if (foundUser){
+            foundUser.secret = submittedSecret;
+            foundUser.save();
+            res.redirect("/secrets");
+        }}).catch(function(err){
+            console.log(err);
+        });
+});
+
+//Using logout from passport https://www.passportjs.org/concepts/authentication/logout/
+app.get("/logout", function (req, res, next){
+    req.logOut(function (err){
+        if (err) {
+            return next(err);
+        }
+        res.redirect("/");
+    });   
+});
+
+// This part isn't working method not correct
+// app.post("/logout", function (req, res, next){
+//     req.logOut(function (err){
+//         if (err) {
+//             return next(err);
+//         }
+//         res.redirect("/");
+//     });
+// });
 
 //from passport-local-mongoose package
 app.post("/register", function(req, res){
@@ -135,26 +183,6 @@ app.post("/login", function (req, res){
         }
     });
 });
-
-//Using logout from passport https://www.passportjs.org/concepts/authentication/logout/
-app.get("/logout", function (req, res, next){
-    req.logOut(function (err){
-        if (err) {
-            return next(err);
-        }
-        res.redirect("/");
-    });   
-});
-
-// This part isn't working method not correct
-// app.post("/logout", function (req, res, next){
-//     req.logOut(function (err){
-//         if (err) {
-//             return next(err);
-//         }
-//         res.redirect("/");
-//     });
-// });
 
 app.listen(3000, function(){
     console.log("Server listening on port 3000");
